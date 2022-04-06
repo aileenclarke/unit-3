@@ -26,3 +26,14 @@ body{
     font-size: 1.5em;
     font-weight: bold;
 }
+
+.blockgroups {
+    fill: rgb(21, 2, 2);
+    stroke: #CCC;
+    stroke-width: 1px;
+}
+
+.map{
+    background-color: aqua;
+    border: medium solid #999;
+}
