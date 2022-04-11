@@ -30,10 +30,18 @@ body{
 .blockgroups {
     fill: rgb(21, 2, 2);
     stroke: #CCC;
+    stroke-width: .75px;
+    stroke-linecap: round;
+}
+
+.states {
+    fill: rgb(172, 172, 172);
+    stroke: #CCC;
     stroke-width: 1px;
 }
 
 .map{
-    background-color: aqua;
+    background-color: rgb(143, 234, 234);
     border: medium solid #999;
 }
+
