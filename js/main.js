@@ -16,7 +16,7 @@
     function setMap(){
 
         // map dimensions
-        var width = 960,
+        var width = window.innerWidth * .5,
             height = 500;
 
         // new svg container to hold map
@@ -78,6 +78,8 @@
 
             setEnumerationUnits(dcBlockGroup, map, path, colorScale);
 
+            setChart(csvData, colorScale);
+
         };
     };
 
@@ -106,7 +108,7 @@
     }
 
     function makeColorScale(data){
-        var colorClasses = ['#ffffe5','#fff7bc','#fee391','#fec44f','#fe9929','#ec7014','#cc4c02','#8c2d04'];
+        var colorClasses = ['#fff5f0','#fee0d2','#fcbba1','#fc9272','#fb6a4a','#ef3b2c','#cb181d','#99000d'];
 
         var colorScale = d3.scaleQuantile()
 	        .range(colorClasses);
@@ -116,6 +118,75 @@
         colorScale.domain(minmax);
 
 	    return colorScale;
+
+    };
+
+    function setChart(csvData, colorScale){
+        // chart frame dimensions
+        var chartWidth = window.innerWidth * .425 ,
+            chartHeight = 500;
+
+        // create svg element
+        var chart = d3.select("body")
+            .append("svg")
+            .attr("width", chartWidth)
+            .attr("height", chartHeight)
+            .attr("class", "chart");
+        
+        // create scale to size bars proportionally to frame
+        var yScale = d3.scaleLinear()
+            .range([0, chartHeight])
+            .domain([0, 105])
+
+        // set bars for each block group
+        var bars = chart.selectAll(".bars")
+            .data(csvData)
+            .enter()
+            .append('rect')
+            .sort(function(a, b){
+                return a[expressed]-b[expressed]
+            })
+            .attr("class", function(d){
+                return "bars" + d.GEOID10;
+            })
+            .attr("width", chartWidth / (csvData.length - 1))
+            .attr("x", function(d,i){
+                return i * (chartWidth / csvData.length);
+            })
+            .attr("height", function(d){
+                return yScale(parseFloat(d[expressed]));
+            })
+            .attr("y", function(d){
+                return chartHeight - yScale(parseFloat(d[expressed]));;
+            })
+            .style("fill", function(d){
+                return colorScale(d[expressed]);
+            });
+
+        // annotate bars with attribute value text
+        var numbers = chart.selectAll(".numbers")
+            .data(csvData)
+            .enter()
+            .append("text")
+            .sort(function(a,b){
+                return a[expressed] - b[expressed]
+            })
+            .attr("class",function(d){
+                return "numbers " + d.GEOID10;
+            })
+            .attr("text-anchor", "middle")
+            .attr("x", function(d, i ){
+                var fraction = chartWidth - csvData.length;
+                return i * fraction + (fraction - 1) / 2;
+            })
+            .attr("y", function(d){
+                return chartHeight - yScale(parseFloat(d[expressed])) + 15;
+            })
+            .text(function(d){
+                return d[expressed];
+            });
+
+
 
     };
 

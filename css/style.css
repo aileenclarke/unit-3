@@ -43,5 +43,12 @@ body{
 .map{
     background-color: rgb(143, 234, 234);
     border: medium solid #999;
+    margin: 10px 0 0 20px; 
 }
 
+.chart {
+    background-color: rgba(220, 147, 147, 0.866);
+    border: medium solid #999;
+    float: right;
+    margin: 10px 20px 0 0;
+}
