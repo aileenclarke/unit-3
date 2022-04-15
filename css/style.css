@@ -90,3 +90,20 @@ body{
     font-size: 0.8em;
     fill: rgb(111, 109, 109);
 }
+
+.dropdown {
+    position: absolute;
+    top: 30px;
+    left: 40px;
+    z-index: 10; /*ensures the element floats above all others*/
+    font-family: sans-serif;
+    font-size: 1em;
+    font-weight: bold;
+    padding: 2px; /* padding around text*/
+    border: 1px solid #999;
+    box-shadow: 2px 2px 4px #999;
+}
+
+option {
+    font-weight: normal; /*maintains all drop down options but adjust font weight */
+}
