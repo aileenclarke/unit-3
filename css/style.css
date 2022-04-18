@@ -60,7 +60,7 @@ body{
 }
 
 .chartBackground {
-    fill: rgba(128,128,128,.2);
+    fill: rgb(255,255,255);
 }
 
 .chartTitle {
@@ -93,7 +93,7 @@ body{
 
 .dropdown {
     position: absolute;
-    top: 30px;
+    top: 120px;
     left: 40px;
     z-index: 10; /*ensures the element floats above all others*/
     font-family: sans-serif;
@@ -106,4 +106,21 @@ body{
 
 option {
     font-weight: normal; /*maintains all drop down options but adjust font weight */
+}
+
+.infolabel {    margin: 0 20px 0 0;    position: absolute;
+    height: px70;
+    min-width: 100px;
+    color: #fff;
+    background-color: #000;
+    border: solid thin #fff;
+    padding: 5px 10px;
+    top: -75px;
+}
+
+.infolabel h1 {
+    margin: 0 20px 0 0;
+    padding: 0;
+    display: inline-block;
+    line-height: 1em;
 }

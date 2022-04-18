@@ -1,4 +1,3 @@
-
 //anonymous function so nothing is in global scope
 (function(){
     // pseudo-global variables
@@ -7,21 +6,7 @@
                     "P_PRMP_D2","P_PTSDF_D2","P_OZONE_D2","P_PM25_D2", "P_UST_D2"];
     var expressed = attrArray[0];
 
-    var chartWidth = window.innerWidth * .425 , // set width as 42.5% of the window's innerWidth property
-        chartHeight = 473,
-        leftPadding = 25,
-        rightPadding = 2,
-        topBottomPadding = 5,
-        // set chart inner width and height to make room for axes
-        chartInnerWidth = chartWidth - leftPadding - rightPadding,
-        chartInnerHeight = chartHeight - topBottomPadding * 2,
-        translate = "translate(" + leftPadding + "," + topBottomPadding + ")";
 
-    // create scale to size bars proportionally to frame
-    var yScale = d3.scaleLinear()
-        .range([463, 0])
-        .domain([0, 100]);
-    
     // begin script when window loads
     window.onload = setMap();
 
@@ -34,7 +19,7 @@
             height = 500;
 
         // new svg container to hold map
-        var map = d3.select("#map")
+        var map = d3.select("body")
             .append("svg")
             .attr("class", "map")
             .attr("width", width)
@@ -99,9 +84,6 @@
             // call the setChart function
             setChart(csvData, colorScale);
 
-            // call the create dropdown function to make menu
-            createDropdown(csvData);
-
         };
     };
 
@@ -154,15 +136,25 @@
     // function to create coordinated visualization
     // input csvData and colorScale to draw and color bars
     function setChart(csvData, colorScale){
+        // chart frame dimensions
+        // set width of chart as a fraction based on the browser window's 'innerWidth'
+        var chartWidth = window.innerWidth * .425 , // set width as 42.5% of the window's innerWidth property
+            chartHeight = 473,
+            leftPadding = 25,
+            rightPadding = 2,
+            topBottomPadding = 5,
+            // set chart inner width and height to make room for axes
+            chartInnerWidth = chartWidth - leftPadding - rightPadding,
+        chartInnerHeight = chartHeight - topBottomPadding * 2,
+        translate = "translate(" + leftPadding + "," + topBottomPadding + ")";
 
         // create svg element fo hold bar chart
-        var chart = d3.select("#chart")
+        var chart = d3.select("body")
             .append("svg")
             .attr("width", chartWidth)
             .attr("height", chartHeight)
             .attr("class", "chart");
         
-            
         // create a rectangle for chart background fill
         var chartBackground = chart.append("rect")
             .attr("class", "chartBackground")
@@ -170,28 +162,25 @@
             .attr("height", chartInnerHeight)
             .attr("transform", translate);
 
-        var bars = chart.selectAll(".bars")
+        // create scale to size bars proportionally to frame
+        var yScale = d3.scaleLinear()
+            .range([463, 0])
+            .domain([0, 100]);
+
+        // create and append rectangles to the chart container for each enumeration unit.
+        var bars = chart.selectAll(".bars") // tktk bar v 
             .data(csvData)
             .enter()
-            .append("rect")
+            .append('rect')
+            // sort data values before applying featuers to 'rect'
             .sort(function(a, b){
-                return a[expressed] - b[expressed]
+                return a[expressed]-b[expressed]
             })
             .attr("class", function(d){
-                return "bars b" + d.GEOID10;
+                return "bars" + d.GEOID10;
             })
-            .attr("width", chartInnerWidth / csvData.length)
-            .on("mouseover", function(event, d){
-                highlight(d);
-            })
-            .on("mouseout", function(event, d){
-                dehighlight(d);
-            })
-            .on("mousemove", moveLabel);
-        
-        /*
             // set width to 1/(n-1), where 1 is the total chart inner width and n is the length of the csv feature array
-            bars.attr("width", chartInnerWidth / (csvData.length - 1))
+            .attr("width", chartInnerWidth / (csvData.length - 1))
             // x = the horizontal coordinate of the left side of the rectangle
             // i is the index of the datum
             .attr("x", function(d,i){
@@ -209,15 +198,44 @@
             // apply color
             .style("fill", function(d){
                 return colorScale(d[expressed]);
-            });*/
-        
+            });
+
+        // annotate bars with attribute value text
+        // follow pattern from bars block
+        /*
+        var numbers = chart.selectAll(".numbers")
+            .data(csvData)
+            .enter()
+            .append("text") // append text element 
+            .sort(function(a, b){
+                return a[expressed]-b[expressed]
+            })
+            .attr("class", function(d){
+                return "numbers " + d.GEOID10;
+            })
+            // center justify text
+            .attr("text-anchor", "middle")
+            // add half of the bar's width to horizontal coordinate to center number id bar
+            .attr("x", function(d, i){
+                var fraction = chartWidth / csvData.length;
+                return i * fraction + (fraction - 1) / 2;
+            })
+            // use same yScale but add 15 pixels to lower the text to sit inside bar
+            .attr("y", function(d){
+                return chartHeight - yScale(parseFloat(d[expressed])) + 15;
+            })
+            // place expressed attribute in text element
+            .text(function(d){
+                return d[expressed];
+            });
+        */
         
         // create text element for chart title and add to chart
         var chartTitle = chart.append("text")
             .attr("x", 40)
             .attr("y", 40)
             .attr("class", "chartTitle")
-            .text("Number of Variable " + expressed + " in each block group");
+            .text("Number of Variable " + expressed[3] + " in each block group");
         
         // create vertical axis generator
         var yAxis = d3.axisLeft()
@@ -236,11 +254,6 @@
             .attr("width", chartInnerWidth)
             .attr("height", chartInnerHeight)
             .attr("transform", translate);
-        
-        // a(dd style descriptor to each rect
-        var desc = bars.append("desc").text('{"stroke": "none", "stroke-width": "0px"}');
-
-        updateChart(bars, csvData.length, colorScale);
     };
 
 
@@ -250,7 +263,7 @@
             .enter()
             .append("path") // path element appended to 
             .attr("class", function(d){ // add class attribute blockgroups and unique class name based on GEOIO10 field
-                return "blockgroups b" + d.properties.GEOID10;
+                return "blockgroups " + d.properties.GEOID10;
             })
             .attr("d", path)
             // style operator with anonymous funtion that applies colorScale to the currently expressed attribute to the fill
@@ -262,202 +275,7 @@
                 } else {            	
                     return "#ccc";            
                 } 
-            })
-            .on("mouseover", function(event, d){
-                highlight(d.properties);
-            })
-            .on("mouseout", function(event, d){
-                dehighlight(d.properties);
-            })
-            .on("mousemove", moveLabel);
-        
-        // add style descriptor to each path
-        var desc = blockgroups.append("desc").text('{"stroke": "#CCC", "stroke-width": "0.75px"}');
-    };
-
-    // function to create dropdown menu for attribute selection
-    function createDropdown(csvData){
-        // append the select element to body
-        var dropdown = d3.select("body")
-            .append("select")
-            .attr("class", "dropdown")
-            // on operator listens for a change on the select features
-            // pass to anonymous function that calls event handler changeAttribute
-            .on("change", function(){
-                // parameters are the value of the select element (referenced by this.), and csvData
-                changeAttribute(this.value, csvData)
             });
-        
-        // creates an initial element with no value and instructional text
-        var titleOption = dropdown.append("option")
-            .attr("class", "titleOption")
-            .attr("disabled", "true")
-            .text("Select Attribute");
-
-        // add attribute name options
-        var attrOptions = dropdown.selectAll("attrOptions")
-            .data(attrArray)
-            .enter()
-            .append("option")
-            .attr("value", function(d){ return d })
-            .text(function(d){ return d})
-    };
-
-    // dropdown change listener handler 
-    // attribute refers to select element that was referenced by "this." in createDropdown
-    function changeAttribute(attribute, csvData){
-        // assign user-selected attribute to 'expressed'
-        expressed = attribute;
-        
-        // pass cvsdata through the scale generator
-        var colorScale = makeColorScale(csvData); 
-
-        // recolor enumeration units
-        var regions = d3.selectAll(".blockgroups")
-            .transition()
-            .duration(9000) // milliseconds
-            .style("fill", function (d) {
-                    var value = d.properties[expressed];
-                console.log(value)
-                if (value) {
-                    return colorScale(d.properties[expressed]);
-                } else {
-                    return "#ccc";
-                }
-        });
-
-        // sort, resize, and recolor bars
-        var bars = d3
-            .selectAll(".bars")
-            //re-sort bars
-            .sort(function (a, b) {
-                return a[expressed] - b[expressed]
-            })
-            .transition() // add after sorting
-            .delay(function(d, i){ // gives appearance of bars rearranging themselves
-                return i * 20
-            })
-            .duration(500);
-
-        updateChart(bars, csvData.length, colorScale);
-    }
-
-    // function to position, size, and color bars in chart
-    function updateChart(bars, n, colorScale){
-        //position bars
-        bars.attr("x", function(d, i){
-                return i * (chartInnerWidth / n) + leftPadding;
-            })
-            //size/resize bars
-            .attr("height", function(d, i){
-                return 463 - yScale(parseFloat(d[expressed]));
-            })
-            .attr("y", function(d, i){
-                return yScale(parseFloat(d[expressed])) + topBottomPadding;
-            })
-            //color/recolor bars
-            .style("fill", function(d){            
-                var value = d[expressed];            
-                if(value) {                
-                    return colorScale(value);            
-                } else {                
-                    return "#ccc";            
-                }    
-        });
-        
-        var chartTitle = d3.select(".chartTitle")
-            .text("EJ Index of  " + expressed + " in each block group");
-    };
-
-    // funciton to highlight enumeration units
-    // props = properties object of selected element from geojson or attrib obj from csv
-    function highlight(props){
-        console.log(props);
-
-        // change stroke
-        var selected = d3
-            .selectAll(".b"+ props.GEOID10)
-            .style("stroke","blue")
-            .style("stroke-width", "2");
-        
-        setLabel(props);
-    }
-
-    // function to reset the element style on mouseout
-    function dehighlight(props){
-        // create a selected block that restyles stroke and stroke width
-        var selected = d3
-            .selectAll(".b" + props.GEOID10)
-            // each style calls anonymous function, which calls getStyle function
-            .style("stroke", function(){
-                return getStyle(this, "stroke");
-            })
-            .style("stroke-width", function(){
-                return getStyle(this, "stroke-width");
-            });
-
-        // takes current element in DOM (this) and the style property in question (ie stroke)
-        // results are passed to style object and style operator, which applies them to each element    
-        function getStyle(element, styleName){
-            var styleText = d3.select(element)
-                // retrieve desc content and return text content with no param.
-                .select("desc")
-                .text();
-            
-            // parse Json string to create json object
-            // return the style property's value
-            var styleObject = JSON.parse(styleText);
-
-            return styleObject[styleName];
-        };
-
-        //remove info label
-        d3.select(".infolabel").remove();
-
-    };
-
-    // function to create dynamic label
-    function setLabel(props){
-        // create HTML string containing selected attrib value
-        var labelAttribute = "<h1>" + props[expressed] + "</h1><b>" + expressed + "</b>";
-        
-        // create div element to hold information
-        var infolabel = d3
-            .select("body")
-            .append("div")
-            .attr("class", "infolabel")
-            .attr("id", props.GEOID10 + "_label")
-            .html(labelAttribute);
-
-        // add child div to contain name of selected block group
-        var bgNumber = infolabel
-            .append("div")
-            .attr("class", "labelname")
-            .html(props.GEOID10);
-    };
-
-    // function to move info label with mouse
-    function moveLabel(){
-        //get width of label
-        var labelWidth = d3.select(".infolabel")
-            .node()
-            .getBoundingClientRect()
-            .width;
-    
-        //use coordinates of mousemove event to set label coordinates
-        var x1 = event.clientX + 10,
-            y1 = event.clientY - 75,
-            x2 = event.clientX - labelWidth - 10,
-            y2 = event.clientY + 25;
-    
-        //horizontal label coordinate, testing for overflow
-        var x = event.clientX > window.innerWidth - labelWidth - 20 ? x2 : x1; 
-        //vertical label coordinate, testing for overflow
-        var y = event.clientY < 75 ? y2 : y1; 
-    
-        d3.select(".infolabel")
-            .style("left", x + "px")
-            .style("top", y + "px");
     };
 
 })();
