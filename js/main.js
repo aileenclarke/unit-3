@@ -5,7 +5,7 @@
     var attrArray = ["Lead Paint", "Diesel Particulate Matter", "Air Toxics Cancer Risk",
                     "Air Toxics Respiratory HI", "Traffic Proximity", "Wastewater Discharge", 
                     "Superfund Proximity", "RMP Facility Proximity", "Hazardous Waste Proximity", 
-                    "Ozone", "Particulater Matter 2.5", "Underground Storage Tanks"
+                    "Ozone", "Particulate Matter 2.5", "Underground Storage Tanks"
                     ];
                     /*["P_UST","P_LDPNT_D2","P_DSLPM_D2","P_CANCR_D2",
                     "P_RESP_D2","P_PTRAF_D2","P_PWDIS_D2","P_PNPL_D2",
@@ -74,9 +74,9 @@
             var csvData = data[0], 
                 blockGroup = data[1], // holds topojson data that becomes parameter for topojson.feature
                 states = data[2];
-            console.log(csvData);
-            console.log(blockGroup);
-            console.log(states);
+            //console.log(csvData);
+            //console.log(blockGroup);
+            //console.log(states);
             
             // translate topojson to geojson
             // topojson.feature takes 2 parameters: variable holding topojson data and 
@@ -139,7 +139,7 @@
     // create color scale
     function makeColorScale(data){
         // array of colors, in order from lightest to darkest
-        var colorClasses = ['#fff5f0','#fee0d2','#fcbba1','#fc9272','#fb6a4a','#ef3b2c','#cb181d','#99000d'];
+        var colorClasses = ['#fbeddd','#fee0d2','#fcbba1','#fc9272','#fb6a4a','#ef3b2c','#cb181d','#99000d'];
 
         // create color scale generator
         var colorScale = d3.scaleQuantile()
@@ -194,29 +194,6 @@
             })
             .on("mousemove", moveLabel);
         
-        /*
-            // set width to 1/(n-1), where 1 is the total chart inner width and n is the length of the csv feature array
-            bars.attr("width", chartInnerWidth / (csvData.length - 1))
-            // x = the horizontal coordinate of the left side of the rectangle
-            // i is the index of the datum
-            .attr("x", function(d,i){
-                return i * (chartInnerWidth / csvData.length) +leftPadding;
-            })
-            // apply yScale to each attribute value to set the bar height
-            .attr("height", function(d){
-                return 463 - yScale(parseFloat(d[expressed]));
-            })
-            // the verticle coordinate of the rectangle's bottom
-            // subtract scale output (yScale...) so that bars "grow" up from bottom of svg
-            .attr("y", function(d, i){
-                return yScale(parseFloat(d[expressed])) + topBottomPadding;
-            })
-            // apply color
-            .style("fill", function(d){
-                return colorScale(d[expressed]);
-            });*/
-        
-        
         // create text element for chart title and add to chart
         var chartTitle = chart.append("text")
             .attr("x", 40)
@@ -248,7 +225,7 @@
         updateChart(bars, csvData.length, colorScale);
     };
 
-
+    // function to set enumeration units
     function setEnumerationUnits(dcBlockGroup, map, path, colorScale){
         var blockgroups = map.selectAll(".blockgroups")
             .data(dcBlockGroup) // requires input as array but in order to draw individually, add .features to the end of topojson.feature()
@@ -283,7 +260,7 @@
     // function to create dropdown menu for attribute selection
     function createDropdown(csvData){
         // append the select element to body
-        var dropdown = d3.select("body")
+        var dropdown = d3.select("#map")
             .append("select")
             .attr("class", "dropdown")
             // on operator listens for a change on the select features
@@ -323,7 +300,7 @@
             .duration(9000) // milliseconds
             .style("fill", function (d) {
                     var value = d.properties[expressed];
-                console.log(value)
+                //console.log(value)
                 if (value) {
                     return colorScale(d.properties[expressed]);
                 } else {
@@ -377,7 +354,7 @@
     // funciton to highlight enumeration units
     // props = properties object of selected element from geojson or attrib obj from csv
     function highlight(props){
-        console.log(props);
+        //console.log(props);
 
         // change stroke
         var selected = d3
