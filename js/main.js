@@ -2,13 +2,18 @@
 //anonymous function so nothing is in global scope
 (function(){
     // pseudo-global variables
-    var attrArray = ["P_UST","P_LDPNT_D2","P_DSLPM_D2","P_CANCR_D2",
+    var attrArray = ["Lead Paint", "Diesel Particulate Matter", "Air Toxics Cancer Risk",
+                    "Air Toxics Respiratory HI", "Traffic Proximity", "Wastewater Discharge", 
+                    "Superfund Proximity", "RMP Facility Proximity", "Hazardous Waste Proximity", 
+                    "Ozone", "Particulater Matter 2.5", "Underground Storage Tanks"
+                    ];
+                    /*["P_UST","P_LDPNT_D2","P_DSLPM_D2","P_CANCR_D2",
                     "P_RESP_D2","P_PTRAF_D2","P_PWDIS_D2","P_PNPL_D2",
-                    "P_PRMP_D2","P_PTSDF_D2","P_OZONE_D2","P_PM25_D2", "P_UST_D2"];
+                    "P_PRMP_D2","P_PTSDF_D2","P_OZONE_D2","P_PM25_D2", "P_UST_D2"];*/
     var expressed = attrArray[0];
 
     var chartWidth = window.innerWidth * .425 , // set width as 42.5% of the window's innerWidth property
-        chartHeight = 473,
+        chartHeight = 500,
         leftPadding = 25,
         rightPadding = 2,
         topBottomPadding = 5,
@@ -19,7 +24,7 @@
 
     // create scale to size bars proportionally to frame
     var yScale = d3.scaleLinear()
-        .range([463, 0])
+        .range([490, 0])
         .domain([0, 100]);
     
     // begin script when window loads
@@ -44,7 +49,7 @@
         var projection = d3.geoAlbers()
             // recommend setting center coord with center lat and rotate long
             .center([0,39]) // long, lat of developable surface's center
-            .rotate([77,0,0]) // long, lat, roll - central meridian and central parallel
+            .rotate([77.03,0,0]) // long, lat, roll - central meridian and central parallel
             .parallels([29.5, 45.5]) // standard parallel(s)
             .scale(130000) // factor by which distances between pts are multiplied
             .translate([width/2, height/250]); // offsets pixel coordinates of the projection's center in the svg
@@ -217,7 +222,7 @@
             .attr("x", 40)
             .attr("y", 40)
             .attr("class", "chartTitle")
-            .text("Number of Variable " + expressed + " in each block group");
+            .text("EJ Index of  " + expressed + " by Block Group");
         
         // create vertical axis generator
         var yAxis = d3.axisLeft()
@@ -350,7 +355,7 @@
             })
             //size/resize bars
             .attr("height", function(d, i){
-                return 463 - yScale(parseFloat(d[expressed]));
+                return 490 - yScale(parseFloat(d[expressed]));
             })
             .attr("y", function(d, i){
                 return yScale(parseFloat(d[expressed])) + topBottomPadding;
@@ -366,7 +371,7 @@
         });
         
         var chartTitle = d3.select(".chartTitle")
-            .text("EJ Index of  " + expressed + " in each block group");
+            .text("EJ Index of  " + expressed + " by Block Group");
     };
 
     // funciton to highlight enumeration units
@@ -377,7 +382,7 @@
         // change stroke
         var selected = d3
             .selectAll(".b"+ props.GEOID10)
-            .style("stroke","blue")
+            .style("stroke","gold")
             .style("stroke-width", "2");
         
         setLabel(props);
